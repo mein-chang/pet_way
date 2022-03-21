@@ -10,4 +10,4 @@ class Pet(models.Model):
     breed = models.CharField(max_length=255)
     gender = models.CharField(max_length=125)
     size = models.CharField(max_length=155)
-    date_joined = models.CharField(max_length=255)
+    date_joined = models.DateTimeField(auto_now_add=True)
