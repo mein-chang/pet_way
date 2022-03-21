@@ -44,6 +44,7 @@ THIRD_PARTY_APPS = [
 ]
 
 MY_APPS = [
+    'services',
     'providers',
 ]
 
