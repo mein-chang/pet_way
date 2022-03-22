@@ -11,3 +11,6 @@ class Pet(models.Model):
     gender = models.CharField(max_length=125)
     size = models.CharField(max_length=155)
     date_joined = models.DateTimeField(auto_now_add=True)
+    
+    
+    user = models.ForeignKey('users.User', related_name='pets', on_delete=models.CASCADE)
