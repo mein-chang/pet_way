@@ -5,13 +5,13 @@ from users.serializers import UserSerializer, LoginSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import authenticate, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 
-class UserView(CreateAPIView):
+class UserView(ListCreateAPIView):
 
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, OnlyAdminPermission]
