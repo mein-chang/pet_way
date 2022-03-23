@@ -10,12 +10,20 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-class UserView(ListCreateAPIView, UpdateAPIView):
+class UserView(ListCreateAPIView):
 
     authentication_classes = [TokenAuthentication]
     permission_classes = [OnlyAdminPermission]
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class UserUpdateView(UpdateAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [OnlyAdminPermission]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'id'
 
 
 class UserLoginView(APIView):
