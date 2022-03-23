@@ -14,10 +14,6 @@ class ProviderServiceListCreateView(ListCreateAPIView):
 
 
     def perform_create(self, serializer):
-        # provider = User.objects.get(id="d9f800db89b0425fa1f59b77af756ab1")
-        # import ipdb
-        # ipdb.set_trace()
-        # serializer = serializer.save(provider=provider.provider)
         serializer = serializer.save(provider=self.request.user)
         return serializer
 
