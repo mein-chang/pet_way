@@ -14,13 +14,13 @@ from rest_framework import status
 class UserView(ListCreateAPIView):
 
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, OnlyAdminPermission]
+    permission_classes = [OnlyAdminPermission]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class UserLoginView(APIView):
-    
+
     def post(self, request):
         
         serializer = LoginSerializer(data=request.data)
