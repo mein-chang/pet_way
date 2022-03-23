@@ -48,10 +48,10 @@ MY_APPS = [
     'users',
     'pets',
     'addresses',
-    'providers',
-    'services',
     'ratings',
     'orders',
+    'providers_info',
+    'providers_services'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + MY_APPS
