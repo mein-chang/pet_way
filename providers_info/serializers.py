@@ -8,3 +8,9 @@ class ProviderInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProviderInfo
         fields = '__all__'
+
+
+class BasicProviderInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProviderInfo
+        exclude = ['id', 'provider']

@@ -3,8 +3,7 @@ from providers_info.serializers import ProviderInfoSerializer
 from rest_framework.authentication import TokenAuthentication
 from .models import ProviderInfo
 from providers_info.permissions import IsProvider
-from users.models import User
-from datetime import date
+from providers_info.exceptions import ProviderInfoAlreadyExistsError
 
 
 class ProviderInfoListCreateView(ListCreateAPIView):
@@ -15,6 +14,9 @@ class ProviderInfoListCreateView(ListCreateAPIView):
 
 
     def perform_create(self, serializer):
+        if self.request.user.provider_info:
+            raise ProviderInfoAlreadyExistsError()
+
         serializer = serializer.save(provider=self.request.user)
         return serializer
 
