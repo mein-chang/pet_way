@@ -7,7 +7,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
 
 
-class OrderRetrieveView(generics.RetrieveAPIView):
+class OrderRetrieveView(generics.RetrieveDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     lookup_url_kwarg = "order_id"

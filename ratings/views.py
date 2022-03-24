@@ -13,6 +13,9 @@ class RatingPetView(APIView):
         try:
             order = Order.objects.get(id=order_id)
 
+            if not order.completed:
+                return Response({"message": "wait until the order is completed"},status=status.HTTP_400_BAD_REQUEST)
+
             if order.rating:
                 serializer = RatingPetSerializer(order.rating,data=request.data)
                 
@@ -47,6 +50,9 @@ class RatingProviderView(APIView):
     def patch(self,request,order_id):
         try:
             order = Order.objects.get(id=order_id)
+            
+            if not order.completed:
+                return Response({"message": "wait until the order is completed"},status=status.HTTP_400_BAD_REQUEST)
 
             if order.rating:
                 serializer = RatingProviderSerializer(order.rating,data=request.data)
