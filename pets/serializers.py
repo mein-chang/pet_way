@@ -22,7 +22,7 @@ class PetSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         name = validated_data['name']
-        if self.context['request'].user.is_provider == False & self.context['request'].user.is_admin == False:
+        if self.context['request'].user.is_provider == False and self.context['request'].user.is_admin == False:
             petName = Pet.objects.filter(name=name).first()
             
             if petName:
