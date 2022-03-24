@@ -14,7 +14,7 @@ class ProviderInfoListCreateView(ListCreateAPIView):
 
 
     def perform_create(self, serializer):
-        if self.request.user.provider_info:
+        if hasattr(self.request.user, 'provider_info'):
             raise ProviderInfoAlreadyExistsError()
 
         serializer = serializer.save(provider=self.request.user)
