@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-)gbi%ccxiyzn$nn07)%87ky+k(nelsf)e&edt4-g%mf!+k50yn
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'petway.herokuapp.com',
+    'localhost',
+]
 
 
 # Application definition
