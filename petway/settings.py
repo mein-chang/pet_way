@@ -56,8 +56,19 @@ MY_APPS = [
     'ratings',
     'orders',
     'providers_info',
-    'providers_services'
+    'providers_services',
+    'drf_yasg',
 ]
+
+SWAGGER_SETTINGS ={
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + MY_APPS
 
