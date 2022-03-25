@@ -7,7 +7,7 @@ class OnlyAdminPermission(BasePermission):
         if request.method == 'POST':
             return True
 
-        if request.user.is_admin == True:
+        if request.user.is_authenticated and request.user.is_admin == True:
             return True
 
         return False
