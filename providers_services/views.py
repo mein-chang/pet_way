@@ -2,7 +2,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from .models import ProviderService
 from .serializers import BasicProviderServiceSerializer, ProviderServiceSerializer
 from rest_framework.authentication import TokenAuthentication
-from providers_info.permissions import IsProvider
+from providers_info.permissions import IsOwnerProvider, IsProvider
 from users.models import User
 from django.shortcuts import get_object_or_404
 from .exceptions import IdIsNotProvider
@@ -32,7 +32,7 @@ class ProviderServiceRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = ProviderService.objects.all()
     serializer_class = ProviderServiceSerializer
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsProvider]
+    permission_classes = [IsProvider, IsOwnerProvider]
 
     lookup_url_kwarg = 'provider_service_id'
 

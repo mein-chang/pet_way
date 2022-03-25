@@ -34,9 +34,9 @@ class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=255, unique=False, null=True)
-    cpf = models.CharField(max_length=20)
+    cpf = models.CharField(max_length=20, unique=True)
     birthdate = models.DateField()
-    phone = models.CharField(max_length=20)
+    phone = models.CharField(max_length=20, unique=True)
     is_provider = models.BooleanField()
     is_admin = models.BooleanField()
 
