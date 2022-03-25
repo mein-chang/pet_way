@@ -3,6 +3,9 @@ from rest_framework import serializers
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    pet_id = serializers.UUIDField(write_only=True)
+    service_id = serializers.UUIDField(write_only=True)
+    
     class Meta:
         model = Order
         fields = "__all__"
