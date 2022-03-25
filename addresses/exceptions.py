@@ -16,3 +16,9 @@ class AddressNotOwnerError(APIException):
     status_code = 403
     default_detail = {
         'error': ['You do not have permission to perform this action. You must have this address registered in your account.']}
+
+
+class AddressNotFoundError(APIException):
+    status_code = 404
+    default_detail = {
+        'error': ['Address not found. Please check.']}
