@@ -18,13 +18,14 @@ class AddressSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         try:
-            zip_code = attrs['zip_code']
-            via_cep = validate_cep(zip_code)
+            if self.context['request'].method == 'POST':
+                zip_code = attrs['zip_code']
+                via_cep = validate_cep(zip_code)
 
-            attrs['zip_code'] = via_cep['cep']
-            attrs['state'] = via_cep['uf']
-            attrs['city'] = via_cep['localidade']
-            attrs['street'] = via_cep['logradouro']
+                attrs['zip_code'] = via_cep['cep']
+                attrs['state'] = via_cep['uf']
+                attrs['city'] = via_cep['localidade']
+                attrs['street'] = via_cep['logradouro']
 
             return super().validate(attrs)
 
