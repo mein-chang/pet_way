@@ -1,9 +1,11 @@
-from .models import Order
 from rest_framework import generics
 from .serializers import OrderSerializer, OrderUpdatePutSerializer, OrderUpdatePatchSerializer
 from pets.models import Pet
 from providers_services.models import ProviderService
 from django.shortcuts import get_object_or_404
+from providers_services.exceptions import IdIsNotProvider
+from users.models import User
+from .models import Order
 
 class OrderListCreateView(generics.ListCreateAPIView):
     queryset = Order.objects.all()
@@ -53,3 +55,38 @@ class OrderUpdatePutView(generics.UpdateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderUpdatePutSerializer
     lookup_url_kwarg = "order_id"
+
+
+class OrderListByPet(generics.ListAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    lookup_url_kwarg = "pet_id"
+
+
+    def get_queryset(self):
+        pet = get_object_or_404(Pet, id=self.kwargs['pet_id'])
+
+        queryset = Order.objects.filter(pet=pet)
+        return queryset
+
+
+class OrderListByProvider(generics.ListAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    lookup_url_kwarg = "provider_id"
+
+
+    def get_queryset(self):
+        user = get_object_or_404(User, id=self.kwargs['provider_id'])
+        
+        if not user.is_provider:
+            raise IdIsNotProvider()
+
+        services = ProviderService.objects.filter(provider=user)
+        
+        queryset = Order.objects.filter(service=services[0])
+   
+        for service in services[1::]:
+            queryset = queryset.union(Order.objects.filter(service=service))
+        
+        return queryset
