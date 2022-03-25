@@ -1,4 +1,4 @@
-from traceback import print_tb
+from operator import itemgetter
 from django.forms import ValidationError
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
@@ -7,13 +7,12 @@ from rest_framework.generics import (ListAPIView, ListCreateAPIView,
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .exceptions import AddressNotOwnerError, AddressNotFoundError
+from .exceptions import AddressNotFoundError, AddressNotOwnerError
 from .models import Address, UserAddress
 from .permissions import IsAdmin
 from .serializers import AddressCompleteSerializer, AddressSerializer
-from .services import validate_create_address
-from users.models import User
-from operator import itemgetter
+from .services import (validate_update_existing_address_or_create,
+                       validate_update_existing_address)
 
 
 class AddressCreateListView(ListCreateAPIView):
@@ -49,32 +48,36 @@ class AddressUpdateView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
-        user_id = self.request.user.id
-        address_id = self.kwargs['address_id']
+        return super().update(request, *args, **kwargs)
 
-        if UserAddress.objects.filter(user_id=user_id, address_id=address_id).exists():
+    def update(self, request, *args, **kwargs):
+        try:
+            user_id = self.request.user.id
+            address_id = self.kwargs['address_id']
 
-            number_of_users = UserAddress.objects.filter(
-                address_id=address_id).count()
+            serializer_request = AddressSerializer(data=request.data)
 
-            if number_of_users > 1:
-                UserAddress.objects.filter(
-                    user_id=user_id, address_id=address_id).delete()
+            if UserAddress.objects.filter(user_id=user_id, address_id=address_id).exists():
 
-                serializer_request = AddressSerializer(
-                    data=request.data)
+                number_of_users = UserAddress.objects.filter(
+                    address_id=address_id).count()
 
-                if serializer_request.is_valid(raise_exception=ValueError):
-                    validate = validate_create_address(
-                        user_id, serializer_request.validated_data)
+                if number_of_users > 1:
+                    validate = validate_update_existing_address_or_create(
+                        user_id, address_id, serializer_request)
                     serialized = AddressSerializer(validate)
                     return Response(serialized.data, status=status.HTTP_201_CREATED)
 
-                return ValidationError(serializer_request.error_messages)
+                if not serializer_request.is_valid():
+                    validate = validate_update_existing_address(
+                        user_id, address_id, serializer_request)
+                    serialized = AddressSerializer(validate)
+                    return Response(serialized.data, status=status.HTTP_201_CREATED)
 
-            return super().update(request, *args, **kwargs)
+            raise AddressNotOwnerError()
 
-        raise AddressNotOwnerError()
+        except Address.DoesNotExist:
+            raise AddressNotFoundError()
 
     def delete(self, request, *args, **kwargs):
         try:
