@@ -9,3 +9,5 @@ class Order(models.Model):
     completed = models.BooleanField(default=False)
 
     rating = models.OneToOneField(Rating,null=True,on_delete=models.SET_NULL)
+    service = models.ForeignKey('providers_services.ProviderService', null=True, on_delete=models.SET_NULL, related_name='orders')
+    pet = models.ForeignKey('pets.Pet', null=True, on_delete=models.SET_NULL)
