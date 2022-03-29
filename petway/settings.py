@@ -58,6 +58,7 @@ MY_APPS = [
     'providers_info',
     'providers_services',
     'drf_yasg',
+    'pet_adoption'
 ]
 
 SWAGGER_SETTINGS ={
