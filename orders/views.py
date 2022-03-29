@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.forms import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
@@ -7,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from .exceptions import (AddressNotFoundError, DoesNotHaveAddressError,
                          DropAddressIsRequiredError, InvalidUUIDError,
                          NotProviderAccountError, NotPetOwnerAccountError,
-                         CustomerAccountError, CustomerAccountOnlyError)
+                         CustomerAccountError, CustomerAccountOnlyError, UpdateError)
 from .models import Order
 from .permissions import IsCustomerOrAdmin
 from .serializers import (OrderSerializer, OrderUpdatePatchSerializer,
@@ -81,33 +82,72 @@ class OrderRetrieveView(generics.RetrieveUpdateDestroyAPIView):
 
         return super().get_serializer_class()
 
-    def perform_update(self, serializer):
+    # def perform_update(self, serializer):
+    #     order_id = self.kwargs['order_id']
+    #     token_id = self.request.user.id
+
+    #     order = get_object_or_404(Order, id=order_id)
+    #     token_user = User.objects.get(id=token_id)
+    #     pet = Pet.objects.get(id=str(order.pet.id))
+
+    #     if pet.user != token_user:
+    #         raise CustomerAccountOnlyError()
+
+    #     if "pet_id" in self.request.data and "service_id" in self.request.data:
+    #         pet = get_object_or_404(Pet, id=self.request.data["pet_id"])
+    #         service = get_object_or_404(
+    #             ProviderService, id=self.request.data["service_id"])
+    #         serializer = serializer.save(pet=pet, service=service)
+
+    #     elif "pet_id" in self.request.data:
+    #         pet = get_object_or_404(Pet, id=self.request.data["pet_id"])
+    #         serializer = serializer.save(pet=pet)
+
+    #     elif "service_id" in self.request.data:
+    #         service = get_object_or_404(
+    #             ProviderService, id=self.request.data["service_id"])
+    #         serializer = serializer.save(service=service)
+
+    #     return super().perform_update(serializer)
+
+    def update(self, request, *args, **kwargs):
+        try:
+            order_id = self.kwargs['order_id']
+            token_id = self.request.user.id
+
+            order = get_object_or_404(Order, id=order_id)
+            token_user = User.objects.get(id=token_id)
+            pet = Pet.objects.get(id=str(order.pet.id))
+
+            if pet.user != token_user:
+                raise CustomerAccountOnlyError()
+
+            if "pick_up_address_id" in self.request.data and "drop_address_id" in self.request.data:
+                request.data["pick_up"] = self.request.data["pick_up_address_id"]
+                request.data["drop"] = self.request.data["drop_address_id"]
+
+            elif "pick_up_address_id" in self.request.data:
+                request.data["pick_up"] = self.request.data["pick_up_address_id"]
+
+            if "drop_address_id" in self.request.data:
+                request.data["drop"] = self.request.data["drop_address_id"]
+
+            return super().update(request, *args, **kwargs)
+
+        except IntegrityError:
+            raise UpdateError()
+
+    def delete(self, request, *args, **kwargs):
         order_id = self.kwargs['order_id']
         token_id = self.request.user.id
 
         order = get_object_or_404(Order, id=order_id)
         token_user = User.objects.get(id=token_id)
-        pet = Pet.objects.get(id=str(order.pet.id))
 
-        if pet.user != token_user:
-            raise CustomerAccountOnlyError()
+        if not (str(token_id) == str(order.pet.user.id) or token_user.is_admin):
+            raise CustomerAccountError()
 
-        if "pet_id" in self.request.data and "service_id" in self.request.data:
-            pet = get_object_or_404(Pet, id=self.request.data["pet_id"])
-            service = get_object_or_404(
-                ProviderService, id=self.request.data["service_id"])
-            serializer = serializer.save(pet=pet, service=service)
-
-        elif "pet_id" in self.request.data:
-            pet = get_object_or_404(Pet, id=self.request.data["pet_id"])
-            serializer = serializer.save(pet=pet)
-
-        elif "service_id" in self.request.data:
-            service = get_object_or_404(
-                ProviderService, id=self.request.data["service_id"])
-            serializer = serializer.save(service=service)
-
-        return super().perform_update(serializer)
+        return super().delete(request, *args, **kwargs)
 
 
 class OrderUpdatePutView(generics.UpdateAPIView):
