@@ -52,3 +52,9 @@ class CustomerAccountOnlyError(APIException):
     status_code = 403
     default_detail = {
         'error': ['You do not have access to this. Only pet owner can perform this action.']}
+
+
+class UpdateError(APIException):
+    status_code = 400
+    default_detail = {
+        'error': ['Please check if you pass the correct id in the field (s).']}
