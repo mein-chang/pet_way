@@ -82,33 +82,6 @@ class OrderRetrieveView(generics.RetrieveUpdateDestroyAPIView):
 
         return super().get_serializer_class()
 
-    # def perform_update(self, serializer):
-    #     order_id = self.kwargs['order_id']
-    #     token_id = self.request.user.id
-
-    #     order = get_object_or_404(Order, id=order_id)
-    #     token_user = User.objects.get(id=token_id)
-    #     pet = Pet.objects.get(id=str(order.pet.id))
-
-    #     if pet.user != token_user:
-    #         raise CustomerAccountOnlyError()
-
-    #     if "pet_id" in self.request.data and "service_id" in self.request.data:
-    #         pet = get_object_or_404(Pet, id=self.request.data["pet_id"])
-    #         service = get_object_or_404(
-    #             ProviderService, id=self.request.data["service_id"])
-    #         serializer = serializer.save(pet=pet, service=service)
-
-    #     elif "pet_id" in self.request.data:
-    #         pet = get_object_or_404(Pet, id=self.request.data["pet_id"])
-    #         serializer = serializer.save(pet=pet)
-
-    #     elif "service_id" in self.request.data:
-    #         service = get_object_or_404(
-    #             ProviderService, id=self.request.data["service_id"])
-    #         serializer = serializer.save(service=service)
-
-    #     return super().perform_update(serializer)
 
     def update(self, request, *args, **kwargs):
         try:
