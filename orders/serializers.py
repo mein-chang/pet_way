@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
-from .exceptions import DoesNotHaveAddressError, NotPetOwnerError
+from providers_services.models import ProviderService
+
+from .exceptions import DoesNotHaveAddressError, NotPetOwnerError, ServiceNotFoundError
 from .models import Order
 from addresses.models import UserAddress
 from addresses.serializers import AddressSerializer
@@ -24,12 +26,16 @@ class OrderSerializer(serializers.ModelSerializer):
         user_id = self.context['request'].user.id
         pick_up_address_id = self.initial_data['pick_up_address_id']
         pet_id = self.initial_data['pet_id']
+        service_id = self.initial_data['service_id']
 
         if not Pet.objects.filter(user_id=user_id, id=pet_id).exists():
             raise NotPetOwnerError()
 
         if not UserAddress.objects.filter(user_id=user_id, address_id=pick_up_address_id).exists():
             raise DoesNotHaveAddressError()
+
+        if not ProviderService.objects.filter(id=service_id).exists():
+            raise ServiceNotFoundError()
 
         return super().validate(attrs)
 
