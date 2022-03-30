@@ -23,3 +23,11 @@ class UserSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
+
+
+class GenerateRecoveryCodeSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class RecoveryPasswordSerializer(serializers.Serializer):
+    password = serializers.CharField()
