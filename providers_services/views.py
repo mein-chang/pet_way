@@ -7,6 +7,10 @@ from users.models import User
 from django.shortcuts import get_object_or_404
 from .exceptions import IdIsNotProvider
 
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
+from drf_yasg import openapi
 
 class ProviderServiceListCreateView(ListCreateAPIView):
     queryset = ProviderService.objects.all()
@@ -14,6 +18,17 @@ class ProviderServiceListCreateView(ListCreateAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsProvider]
 
+
+    @swagger_auto_schema(operation_description="description",request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        "type": openapi.Schema(type=openapi.TYPE_STRING, description='type'),
+        "price": openapi.Schema(type=openapi.TYPE_NUMBER, description='price'),
+        "description": openapi.Schema(type=openapi.TYPE_STRING, description='Description'),
+        
+    }) ,responses={201: ProviderServiceSerializer})
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         serializer = serializer.save(provider=self.request.user)
@@ -42,6 +57,28 @@ class ProviderServiceListByProvider(ListAPIView):
     serializer_class = BasicProviderServiceSerializer
 
     lookup_url_kwarg = 'provider_id'
+
+
+    @swagger_auto_schema(operation_description="description",request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        "type": openapi.Schema(type=openapi.TYPE_STRING, description='type'),
+        "price": openapi.Schema(type=openapi.TYPE_NUMBER, description='price'),
+        "description": openapi.Schema(type=openapi.TYPE_STRING, description='Description'),
+        
+    }) ,responses={200: ProviderServiceSerializer})
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
+
+    @swagger_auto_schema(operation_description="description",request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        "description": openapi.Schema(type=openapi.TYPE_STRING, description='Description'),
+        
+    }) ,responses={200: ProviderServiceSerializer})
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
 
 
     def get_queryset(self):
