@@ -1,6 +1,6 @@
 from users.models import User
-from users.permissions import OnlyAdminPermission, TokenRecoveryPermission
-from users.serializers import UserSerializer, LoginSerializer, GenerateRecoveryCodeSerializer, RecoveryPasswordSerializer
+from users.permissions import OnlyAdminPermission, TokenRecoveryPermission, InvalidCodeError
+from users.serializers import UserSerializer, LoginSerializer, GenerateRecoveryCodeSerializer
 
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import authenticate, TokenAuthentication
@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.mail import send_mail
+
 import os
 from dotenv import load_dotenv
 
@@ -140,25 +141,22 @@ class GenerateRecoveryCodeView(APIView):
 
 
 class PasswordRecoveryView(APIView):
-    pass
-#     authentication_classes = [TokenAuthentication]
-#     permission_classes = [TokenRecoveryPermission]
 
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [TokenRecoveryPermission]
 
-    # def put(self, request):
-    #     serializer = RecoveryPasswordSerializer(data=request.data)
+    def patch(self, request):
 
-    #     if not serializer.is_valid():
-    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        email = request.user.email
+        user = User.objects.filter(email=email).first()
 
-    #     email = request.user.email
-    #     user = User.objects.filter(email=email).first()
+        serializer = UserSerializer(user, data=request.data, partial=True)
 
-    #     serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            user.set_password(request.data['password'])
+            user.save()
 
-    #     if serializer.is_valid():
-    #         serializer.save()
+            return Response({'message': 'Password updated'}, status=status.HTTP_200_OK)
 
-    #         return Response({'message': 'Password updated'}, status=status.HTTP_200_OK)
-
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
