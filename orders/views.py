@@ -19,6 +19,10 @@ from providers_services.exceptions import IdIsNotProvider
 from providers_services.models import ProviderService
 from users.models import User
 
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
+from drf_yasg import openapi
 
 class OrderListCreateView(generics.ListCreateAPIView):
     queryset = Order.objects.all()
@@ -27,6 +31,17 @@ class OrderListCreateView(generics.ListCreateAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsCustomerOrAdmin]
 
+
+    @swagger_auto_schema(operation_description="description",request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        "service_date": openapi.Schema(type=openapi.TYPE_STRING, description='Date for service'),
+        "completed": openapi.Schema(type=openapi.TYPE_BOOLEAN, description='boolean'),
+        
+    }) ,responses={201: OrderSerializer})
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+    
     def perform_create(self, serializer):
         try:
             pet = Pet.objects.get(id=self.request.data["pet_id"])

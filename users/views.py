@@ -9,14 +9,35 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
-class UserView(ListCreateAPIView):
+from drf_yasg import openapi
 
+class UserView(ListCreateAPIView):    
+    
     authentication_classes = [TokenAuthentication]
     permission_classes = [OnlyAdminPermission]
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
+    
+    @swagger_auto_schema(operation_description="description",request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        "email": openapi.Schema(type=openapi.TYPE_STRING, description='email@gmail.com'),
+        "password": openapi.Schema(type=openapi.TYPE_STRING, description='password'),
+        "first_name": openapi.Schema(type=openapi.TYPE_STRING, description='first_name'),
+        "last_name": openapi.Schema(type=openapi.TYPE_STRING, description='last_name'),
+        "cpf": openapi.Schema(type=openapi.TYPE_STRING, description='00000000'),
+        "birthdate": openapi.Schema(type=openapi.TYPE_STRING, description='YYYY-MM-DD'),
+        "phone": openapi.Schema(type=openapi.TYPE_STRING, description='00-0000000'),
+        "is_provider": openapi.Schema(type=openapi.TYPE_BOOLEAN, description='boolean'),
+        "is_admin": openapi.Schema(type=openapi.TYPE_BOOLEAN, description='boolean')
+        
+        
+    }) ,responses={201: UserSerializer})
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 class UserUpdateView(UpdateAPIView):
     authentication_classes = [TokenAuthentication]
@@ -26,8 +47,41 @@ class UserUpdateView(UpdateAPIView):
     lookup_field = 'id'
 
 
-class UserLoginView(APIView):
+    @swagger_auto_schema(operation_description="description",request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        "first_name": openapi.Schema(type=openapi.TYPE_STRING, description='first_name'),   
+    }) ,responses={200: UserSerializer})
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
 
+
+    @swagger_auto_schema(operation_description="description",request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        "email": openapi.Schema(type=openapi.TYPE_STRING, description='email@gmail.com'),
+        "password": openapi.Schema(type=openapi.TYPE_STRING, description='password'),
+        "first_name": openapi.Schema(type=openapi.TYPE_STRING, description='first_name'),
+        "last_name": openapi.Schema(type=openapi.TYPE_STRING, description='last_name'),
+        "cpf": openapi.Schema(type=openapi.TYPE_STRING, description='00000000'),
+        "birthdate": openapi.Schema(type=openapi.TYPE_STRING, description='YYYY-MM-DD'),
+        "phone": openapi.Schema(type=openapi.TYPE_STRING, description='00-0000000'),
+        "is_provider": openapi.Schema(type=openapi.TYPE_BOOLEAN, description='boolean'),
+        "is_admin": openapi.Schema(type=openapi.TYPE_BOOLEAN, description='boolean')
+        
+        
+    }) ,responses={200: UserSerializer})
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
+
+class UserLoginView(APIView):
+    @swagger_auto_schema(operation_description="description",request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        "email": openapi.Schema(type=openapi.TYPE_STRING, description='email@gmail.com'),
+        "password": openapi.Schema(type=openapi.TYPE_STRING, description='string')
+    }) ,responses={200: "token"})
     def post(self, request):
         
         serializer = LoginSerializer(data=request.data)
