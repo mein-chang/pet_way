@@ -12,16 +12,32 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsOwner
 # Create your views here.
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
+from drf_yasg import openapi
 
 class PetAdoptionCreateListView(ListCreateAPIView):
-    
+
     queryset = PetAdoption.objects.all()
     serializer_class = PetAdoptionSerializer
 
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     
+    @swagger_auto_schema(operation_description="description",request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        "castrated": openapi.Schema(type=openapi.TYPE_BOOLEAN, description='boolean'),
+        "is_vaccinated": openapi.Schema(type=openapi.TYPE_BOOLEAN, description='boolean'),
+        "is_health": openapi.Schema(type=openapi.TYPE_BOOLEAN, description='boolean'),
+        "additional_info": openapi.Schema(type=openapi.TYPE_STRING, description='Information for animal'),
+        "available": openapi.Schema(type=openapi.TYPE_BOOLEAN, description='boolean'),
+        "pet_id": openapi.Schema(type=openapi.TYPE_STRING, description='Id User'),
+        
+    }) ,responses={201: PetAdoptionSerializer})
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
     
     def filter_queryset(self, queryset):
         queryset = queryset.filter(available=True)
@@ -38,8 +54,20 @@ class PetUpdateView(UpdateAPIView):
     
     lookup_url_kwarg = 'adoption_id'
     
-    def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+    
+    @swagger_auto_schema(operation_description="description",request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        "castrated": openapi.Schema(type=openapi.TYPE_BOOLEAN, description='boolean'),
+        "is_vaccinated": openapi.Schema(type=openapi.TYPE_BOOLEAN, description='boolean'),
+        "is_health": openapi.Schema(type=openapi.TYPE_BOOLEAN, description='boolean'),
+        "additional_info": openapi.Schema(type=openapi.TYPE_STRING, description='Information for animal'),
+        "available": openapi.Schema(type=openapi.TYPE_BOOLEAN, description='boolean'),
+        "pet_id": openapi.Schema(type=openapi.TYPE_STRING, description='Id User'),
+        
+    }) ,responses={200: PetAdoptionSerializer})
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
     
     def update(self, request, *args, **kwargs):
 
