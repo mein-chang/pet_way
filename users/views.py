@@ -144,8 +144,6 @@ class PasswordRecoveryView(APIView):
 
     authentication_classes = [TokenAuthentication]
     permission_classes = [TokenRecoveryPermission]
-        # if request.user.is_authenticated == False:
-            # raise InvalidCodeError()
 
     def patch(self, request):
 
