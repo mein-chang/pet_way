@@ -69,10 +69,12 @@ SWAGGER_SETTINGS ={
         'Bearer': {
             'type': 'apiKey',
             'name': 'Authorization',
-            'in': 'header'
+            'in': 'header',
         }
     }
 }
+
+PERSIST_AUTH: True 
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + MY_APPS
 

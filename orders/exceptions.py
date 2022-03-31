@@ -58,3 +58,9 @@ class UpdateError(APIException):
     status_code = 400
     default_detail = {
         'error': ['Please check if you pass the correct id in the field (s).']}
+
+
+class ServiceNotFoundError(APIException):
+    status_code = 404
+    default_detail = {
+        'error': ['Service not found.']}

@@ -28,7 +28,7 @@ schema_view = get_schema_view(
       description="Service PetWay",
       terms_of_service="http://127.0.0.1:8000/",
       contact=openapi.Contact(email="petWay@gmail.com"),
-      license=openapi.License(name="PETWAY License"),
+      license=openapi.License(name="Link da API PetWay", url="https://petway-django.herokuapp.com/"),
    ),
    public=True,
    permission_classes=[permissions.AllowAny],
