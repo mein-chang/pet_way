@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission
-from rest_framework.response import Response
-from rest_framework import status
+
+from users.exceptions import InvalidCodeError
 
 
 class OnlyAdminPermission(BasePermission):
@@ -19,7 +19,7 @@ class TokenRecoveryPermission(BasePermission):
 
     def has_permission(self, request, view):
         
-        if not request.user.is_authenticated:
-            return Response({'message': 'Invalid code for recovery'}, status=status.HTTP_400_BAD_REQUEST)
-        
+        if request.user.is_authenticated == False:
+            raise InvalidCodeError()
+
         return True

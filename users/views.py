@@ -51,6 +51,7 @@ class UserLoginView(APIView):
 
 class GenerateRecoveryCodeView(APIView):
 
+
     def post(self, request):
 
         serializer = GenerateRecoveryCodeSerializer(data=request.data)
@@ -86,18 +87,18 @@ class PasswordRecoveryView(APIView):
     permission_classes = [TokenRecoveryPermission]
 
 
-    def put(self, request):
+    def patch(self, request, token):
         serializer = RecoveryPasswordSerializer(data=request.data)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         email = request.user.email
-        new_password = request.data
+        new_password = request.data['password']
         user = User.objects.filter(email=email).first()
 
         serializer = UserSerializer(user, data=new_password)
+
         serializer.save()
 
         return Response({'message': 'Password updated'}, status=status.HTTP_200_OK)
-
