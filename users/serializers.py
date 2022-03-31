@@ -27,7 +27,3 @@ class LoginSerializer(serializers.Serializer):
 
 class GenerateRecoveryCodeSerializer(serializers.Serializer):
     email = serializers.EmailField()
-
-
-class RecoveryPasswordSerializer(serializers.Serializer):
-    password = serializers.CharField()
