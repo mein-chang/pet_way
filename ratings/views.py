@@ -5,10 +5,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Rating
 from orders.models import Order
-
+from rest_framework.authentication import TokenAuthentication
+from .permissions import IsCustomer, IsCustomerOrder, IsProvider, IsProviderOrder
 
 # provider avaliando o pet/dono do pet
 class RatingPetView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsProvider, IsProviderOrder]
+
     def patch(self,request,order_id):
         try:
             order = Order.objects.get(id=order_id)
@@ -47,6 +51,9 @@ class RatingPetView(APIView):
        
 # customer avaliando o provider
 class RatingProviderView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsCustomer, IsCustomerOrder]
+
     def patch(self,request,order_id):
         try:
             order = Order.objects.get(id=order_id)

@@ -1,9 +1,7 @@
-from django.forms import ValidationError
 from rest_framework import serializers
 
-from .exceptions import ZipCodeError
 from .models import Address
-from .services import validate_cep, validate_create_address
+from .services import validate_exisiting_address, validate_cep_request
 from users.serializers import UserSerializer
 
 
@@ -17,27 +15,22 @@ class AddressSerializer(serializers.ModelSerializer):
             'read_only': True}, 'street': {'read_only': True}}
 
     def validate(self, attrs):
-        try:
-            zip_code = attrs['zip_code']
-            via_cep = validate_cep(zip_code)
+        if self.context['request'].method == 'POST':
+            valid = validate_cep_request(self, attrs)
+            return super().validate(valid)
 
-            attrs['zip_code'] = via_cep['cep']
-            attrs['state'] = via_cep['uf']
-            attrs['city'] = via_cep['localidade']
-            attrs['street'] = via_cep['logradouro']
+        if self.context['request'].method == 'PATCH':
+            try:
+                if self.initial_data['zip_code']:
+                    valid = validate_cep_request(self, attrs)
+                    return super().validate(valid)
 
-            return super().validate(attrs)
-
-        except KeyError:
-            raise ZipCodeError()
-
-        except TypeError:
-            raise ValidationError(
-                {'error': ['Invalid zip_code. Only numbers, 8 characters.']})
+            except KeyError:
+                return super().validate(attrs)
 
     def create(self, validated_data):
         user_id = self.context['request'].user.id
-        return validate_create_address(user_id, validated_data)
+        return validate_exisiting_address(user_id, validated_data)
 
 
 class AddressCompleteSerializer(serializers.ModelSerializer):

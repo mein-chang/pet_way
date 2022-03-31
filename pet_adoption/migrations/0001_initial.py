@@ -13,16 +13,16 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Pet',
+            name='PetAdoption',
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=255)),
-                ('birthdate', models.DateField()),
-                ('specie', models.CharField(max_length=255)),
-                ('breed', models.CharField(max_length=255)),
-                ('gender', models.CharField(max_length=125)),
-                ('size', models.CharField(max_length=155)),
+                ('available', models.BooleanField(default=True)),
+                ('castrated', models.BooleanField()),
+                ('is_vaccinated', models.BooleanField()),
+                ('is_health', models.BooleanField()),
+                ('additional_info', models.TextField()),
                 ('date_joined', models.DateTimeField(auto_now_add=True)),
+                ('adopted_at', models.DateTimeField(auto_now_add=True)),
             ],
         ),
     ]

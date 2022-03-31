@@ -10,14 +10,14 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('providers_info', '0001_initial'),
+        ('pet_adoption', '0002_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='providerinfo',
-            name='provider',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='provider_info', to=settings.AUTH_USER_MODEL),
+            model_name='petadoption',
+            name='user',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pets_adoptions', to=settings.AUTH_USER_MODEL),
         ),
     ]
