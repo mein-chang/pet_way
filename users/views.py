@@ -9,7 +9,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.mail import send_mail
-from django.conf import settings
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class UserView(ListCreateAPIView):
@@ -68,37 +71,40 @@ class GenerateRecoveryCodeView(APIView):
 
         token = Token.objects.get_or_create(user=user)[0]
 
+        email_host_user = str(os.getenv('EMAIL_HOST_USER'))
+
         subject = 'CÓDIGO PARA RECUPERAÇÃO DE SENHA'
-        message = token.key
-        email_from = settings.EMAIL_HOST_USER
+        message = '<h2>Aqui está seu código para recuperação de senha.</h2>' + token.key
+        email_from = email_host_user
         recipient_list = [email]
 
-        # send_mail(
-        #     subject=subject, message=message, from_email=email_from, recipient_list=recipient_list
-        # )
+        send_mail(
+            subject=subject, message=message, from_email=email_from, recipient_list=recipient_list, fail_silently=False, html_message=message
+        )
 
-        # return Response({'message': 'Recovery code sent by email.'})
-        return Response({'message': token.key})
+        return Response({'message': 'Recovery code sent by email.'})
 
 
 class PasswordRecoveryView(APIView):
-    
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [TokenRecoveryPermission]
+    pass
+#     authentication_classes = [TokenAuthentication]
+#     permission_classes = [TokenRecoveryPermission]
 
 
-    def patch(self, request, token):
-        serializer = RecoveryPasswordSerializer(data=request.data)
+    # def put(self, request):
+    #     serializer = RecoveryPasswordSerializer(data=request.data)
 
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #     if not serializer.is_valid():
+    #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        email = request.user.email
-        new_password = request.data['password']
-        user = User.objects.filter(email=email).first()
+    #     email = request.user.email
+    #     user = User.objects.filter(email=email).first()
 
-        serializer = UserSerializer(user, data=new_password)
+    #     serializer = UserSerializer(user, data=request.data)
 
-        serializer.save()
+    #     if serializer.is_valid():
+    #         serializer.save()
 
-        return Response({'message': 'Password updated'}, status=status.HTTP_200_OK)
+    #         return Response({'message': 'Password updated'}, status=status.HTTP_200_OK)
+
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
